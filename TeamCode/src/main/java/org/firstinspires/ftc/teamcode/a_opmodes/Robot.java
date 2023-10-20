@@ -1,79 +1,92 @@
 package org.firstinspires.ftc.teamcode.a_opmodes;
 
-/*
- * TYPE			NAME			ID		    DESCRIPTION
- * ------------------------------------------------------------
- * MOTOR		liftLeft		liftL		Lift Motor Left
- * MOTOR		liftRight		liftR		Lift Motor Right
- *
- * SERVO        clawLeft        clawLeft    Claw Left (Open/Close)
- * SERVO        clawRight       clawRight   Claw Right (Open/Close)
- *
- * CRSERVO		spool			spool		Tensions MGN Rail
- */
-
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.arcrobotics.ftclib.drivebase.MecanumDrive;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.teamcode.c_subsystems.MecanumSubsystem;
-
 import java.util.List;
+
+/*
+ * TYPE			NAME			ID		DESCRIPTION
+ * ------------------------------------------------------------
+ * MOTOR		frontLeft		fL		    Front Left Mecanum
+ * MOTOR		frontRight		fR          Front Right Mecanum
+ * MOTOR		backLeft		bL		    Back Left Mecanum
+ * MOTOR		backRight		bR		    Back Right Mecanum
+ * MOTOR        intake          intake      The Intake
+ */
 
 @Config
 public class Robot {
-	public static double akP = 0.005, akI = 0.0, akD = 0, akF = 0.0;
-	public VoltageSensor voltageSensor;
 
-	public MotorEx frontLeft, frontRight, backLeft, backRight;// Motor Group
-	boolean isAuto;
+    // DEVICE DEFINITIONS
+    public MotorEx frontLeft, backLeft, frontRight, backRight, intake;
 
-	// MISC DEFINITIONS
-	public FtcDashboard     dashboard = FtcDashboard.getInstance(); //FTC Dashboard Instance
-	public List<LynxModule> revHubs; //Lynx Module for REV Hubs
+    // MISC DEFINITIONS
+    public FtcDashboard     dashboard = FtcDashboard.getInstance(); //FTC Dashboard Instance
+    public List<LynxModule> revHubs; //Lynx Module for REV Hubs
+    public VoltageSensor    voltageSensor; // Voltage Sensor 🤯
 
-	public MecanumSubsystem drive;
+    public Robot(HardwareMap hardwareMap) {
+        this(hardwareMap, false);
+    }
 
-	public Robot(HardwareMap hardwareMap) {
-		this(hardwareMap, false);
-	}
+    public Robot(HardwareMap hardwareMap, boolean isAuto) {
 
-	public Robot(HardwareMap hardwareMap, boolean isAuto) {
+        voltageSensor = hardwareMap.voltageSensor.iterator().next(); // Assign Voltage Sensor
 
-		voltageSensor = hardwareMap.voltageSensor.iterator().next();
+        // Bulk Reads, see https://gm0.org/en/latest/docs/software/tutorials/bulk-reads.html
+        revHubs = hardwareMap.getAll(LynxModule.class);
 
-		this.isAuto = isAuto;
+        for (LynxModule hub : revHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
-		// Bulk Read
-		revHubs = hardwareMap.getAll(LynxModule.class);
+        // MOTORS   ------------------------------------------------------------------------------------------------
+        // Map
+        frontLeft  = new MotorEx(hardwareMap, "fL", MotorEx.GoBILDA.RPM_312);
+        frontRight = new MotorEx(hardwareMap, "fR", MotorEx.GoBILDA.RPM_312);
+        backLeft   = new MotorEx(hardwareMap, "bL", MotorEx.GoBILDA.RPM_312);
+        backRight  = new MotorEx(hardwareMap, "bR", MotorEx.GoBILDA.RPM_312);
 
-		for (LynxModule hub : revHubs) {
-			hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
-		}
+        intake = new MotorEx(hardwareMap, "intake", MotorEx.GoBILDA.RPM_312);
 
-		// MOTORS ----------------------------------------------------------------------------------------------------
+        // Reset
+        frontLeft.resetEncoder();
+        frontRight.resetEncoder();
+        backLeft.resetEncoder();
+        backRight.resetEncoder();
 
-		// SERVOS ----------------------------------------------------------------------------------------------------
+        intake.resetEncoder();
 
-		// COMMANDS & SUBSYSTEMS --------------------------------------------------------------------------------------
-		drive = new MecanumSubsystem(frontLeft, frontRight, backLeft, backRight);
+        // Velocity Control
+        frontLeft.setRunMode(MotorEx.RunMode.VelocityControl);
+        frontRight.setRunMode(MotorEx.RunMode.VelocityControl);
+        backLeft.setRunMode(MotorEx.RunMode.VelocityControl);
+        backRight.setRunMode(MotorEx.RunMode.VelocityControl);
 
-		if (isAuto) {
-			autoConfig(hardwareMap);
-		}
+        intake.setRunMode(Motor.RunMode.VelocityControl);
 
-	}
+        // BRAKE When No Power
+        frontLeft.setZeroPowerBehavior(MotorEx.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(MotorEx.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(MotorEx.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(MotorEx.ZeroPowerBehavior.BRAKE);
 
-	private void autoConfig(HardwareMap hardwareMap) {
+        intake.setZeroPowerBehavior(MotorEx.ZeroPowerBehavior.BRAKE);
 
-	}
+        // AUTO CONFIG  ------------------------------------------------------------------------------------------------
+        if (isAuto) {
+            autoConfig(hardwareMap);
+        }
+    }
+
+    // Autonomous specific configs
+    private void autoConfig(HardwareMap hardwareMap) {
+    }
+
 }

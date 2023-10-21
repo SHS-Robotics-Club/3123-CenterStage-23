@@ -5,14 +5,21 @@ import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 
 public class IntakeSubsystem extends SubsystemBase {
     private final MotorEx intake;
+    private final double mult;
 
     public static IntakeState intakeState    = IntakeState.STOPPED;
 
     /**
      * @param intake  The intake motor object.
      */
+    public IntakeSubsystem(MotorEx intake, double mult) {
+        this.intake  = intake;
+        this.mult = mult;
+    }
+
     public IntakeSubsystem(MotorEx intake) {
         this.intake  = intake;
+        this.mult = 1.0;
     }
 
     /**
@@ -42,7 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public void input() {
         intakeState = IntakeState.INPUTTING;
-        intake.set(1);
+        intake.set(1 * mult);
     }
 
     /**
@@ -50,7 +57,7 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public void output() {
         intakeState = IntakeState.OUTPUTTING;
-        intake.set(-1);
+        intake.set(-1 * mult);
     }
 
     /**

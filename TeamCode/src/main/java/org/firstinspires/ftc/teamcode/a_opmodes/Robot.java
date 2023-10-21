@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.a_opmodes;
 
-import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.hardware.lynx.LynxModule;
@@ -20,14 +18,14 @@ import java.util.List;
  * MOTOR        intake          intake      The Intake
  */
 
-@Config
+//@Config
 public class Robot {
 
     // DEVICE DEFINITIONS
     public MotorEx frontLeft, backLeft, frontRight, backRight, intake;
 
     // MISC DEFINITIONS
-    public FtcDashboard     dashboard = FtcDashboard.getInstance(); //FTC Dashboard Instance
+    //public FtcDashboard     dashboard = FtcDashboard.getInstance(); //FTC Dashboard Instance
     public List<LynxModule> revHubs; //Lynx Module for REV Hubs
     public VoltageSensor    voltageSensor; // Voltage Sensor 🤯
 

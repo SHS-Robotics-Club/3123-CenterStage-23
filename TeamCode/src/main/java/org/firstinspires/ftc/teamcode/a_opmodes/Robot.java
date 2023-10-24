@@ -19,33 +19,36 @@ import java.util.List;
  */
 
 //@Config
-public class Robot {
 
+/**
+ * This class represents the robot configuration and provides methods to initialize and control its components.
+ */
+public class Robot {
     // DEVICE DEFINITIONS
     public MotorEx frontLeft, backLeft, frontRight, backRight, intake;
 
     // MISC DEFINITIONS
     //public FtcDashboard     dashboard = FtcDashboard.getInstance(); //FTC Dashboard Instance
-    public List<LynxModule> revHubs; //Lynx Module for REV Hubs
-    public VoltageSensor    voltageSensor; // Voltage Sensor 🤯
+    public List<LynxModule> revHubs; // List to store REV Hubs
+    public VoltageSensor    voltageSensor; // Voltage Sensor to monitor battery voltage
 
-    public Robot(HardwareMap hardwareMap) {
-        this(hardwareMap, false);
-    }
-
+    /**
+     * Constructor to initialize the robot hardware components.
+     * @param hardwareMap The hardware map containing all the robot components.
+     * @param isAuto A flag indicating whether the robot is in autonomous mode.
+     */
     public Robot(HardwareMap hardwareMap, boolean isAuto) {
+        // Initialize voltage sensor
+        voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        voltageSensor = hardwareMap.voltageSensor.iterator().next(); // Assign Voltage Sensor
-
-        // Bulk Reads, see https://gm0.org/en/latest/docs/software/tutorials/bulk-reads.html
+        // Initialize REV Hubs for bulk reads, see https://gm0.org/en/latest/docs/software/tutorials/bulk-reads.html
         revHubs = hardwareMap.getAll(LynxModule.class);
-
         for (LynxModule hub : revHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
         // MOTORS   ------------------------------------------------------------------------------------------------
-        // Map
+        // Initialize motors
         frontLeft  = new MotorEx(hardwareMap, "fL", MotorEx.GoBILDA.RPM_312);
         frontRight = new MotorEx(hardwareMap, "fR", MotorEx.GoBILDA.RPM_312);
         backLeft   = new MotorEx(hardwareMap, "bL", MotorEx.GoBILDA.RPM_312);
@@ -53,7 +56,7 @@ public class Robot {
 
         intake = new MotorEx(hardwareMap, "intake", MotorEx.GoBILDA.RPM_312);
 
-        // Reset
+        // Reset encoders for accurate position tracking
         frontLeft.resetEncoder();
         frontRight.resetEncoder();
         backLeft.resetEncoder();
@@ -61,7 +64,7 @@ public class Robot {
 
         intake.resetEncoder();
 
-        // Velocity Control
+        // Set motors control mode
         frontLeft.setRunMode(MotorEx.RunMode.VelocityControl);
         frontRight.setRunMode(MotorEx.RunMode.VelocityControl);
         backLeft.setRunMode(MotorEx.RunMode.VelocityControl);
@@ -69,7 +72,7 @@ public class Robot {
 
         intake.setRunMode(Motor.RunMode.VelocityControl);
 
-        // BRAKE When No Power
+        // Set zero power behavior to BRAKE when no power is applied
         frontLeft.setZeroPowerBehavior(MotorEx.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(MotorEx.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(MotorEx.ZeroPowerBehavior.BRAKE);
@@ -79,12 +82,7 @@ public class Robot {
 
         // AUTO CONFIG  ------------------------------------------------------------------------------------------------
         if (isAuto) {
-            autoConfig(hardwareMap);
+            // Add autonomous-specific configuration here
         }
     }
-
-    // Autonomous specific configs
-    private void autoConfig(HardwareMap hardwareMap) {
-    }
-
 }

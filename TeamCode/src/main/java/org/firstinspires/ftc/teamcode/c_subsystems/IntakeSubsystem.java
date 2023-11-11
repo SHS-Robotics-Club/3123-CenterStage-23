@@ -79,6 +79,10 @@ public class IntakeSubsystem extends SubsystemBase {
         intake.stopMotor(); // Ensure motor is fully stopped
     }
 
+    public IntakeState getIntakeState() {
+        return intakeState;
+    }
+
     // Enum to represent different states of the intake
     public enum IntakeState {
         INPUTTING, OUTPUTTING, STOPPED
